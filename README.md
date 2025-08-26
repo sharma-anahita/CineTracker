@@ -15,7 +15,7 @@ Built with **Vite + React**, it provides an easy-to-use interface for browsing, 
 ## 🛠️ Tech Stack
 - **Frontend:** React, Vite  
 - **Styling:** CSS 
-- **APIs:** (e.g., [TMDb API](https://www.themoviedb.org/documentation/api) — update if different)  
+- **APIs:** (e.g., [TMDb API](https://www.themoviedb.org/documentation/api) )  
 - **Package Manager:** npm  
 
 ---
