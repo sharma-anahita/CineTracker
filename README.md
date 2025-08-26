@@ -1,16 +1,30 @@
-# React + Vite
+# 🎬 CineTracker
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+CineTracker is a web application that helps users discover, track, and manage their favorite movies.  
+Built with **Vite + React**, it provides an easy-to-use interface for browsing, searching, and organizing films.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🚀 Features
+- 🔍 Search for movies by title  
+- 📄 View detailed information (overview, release date, rating, etc.)    
+- 🎨 Clean and responsive UI  
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## 🛠️ Tech Stack
+- **Frontend:** React, Vite  
+- **Styling:** CSS 
+- **APIs:** (e.g., [TMDb API](https://www.themoviedb.org/documentation/api) — update if different)  
+- **Package Manager:** npm  
 
-#intro get all your moveies in one place , all the links , doesn't matter which website
-#fix code for spinner 
-#uniformity
+---
+
+## 📦 Installation & Setup
+Clone the repository and install dependencies:
+
+```bash
+git clone https://github.com/sharma-anahita/CineTracker.git
+cd CineTracker
+npm install
+npm run dev
