@@ -60,21 +60,21 @@ const App = () => {
     }
   };
 
-  const loadTrendingMovies = async () => {
+async function loadTrendingMovies() {
     try {
-      const movies = await getTrendingMovies();
-      settrendingMovies(movies);
-    } catch (error) {
-      console.log("Error fetching trending Movies", error);
+      const databaseId = import.meta.env.REACT_APP_APPWRITE_DATABASE_ID || "your-database-id";
+      const collectionId =import.meta.env.REACT_APP_APPWRITE_COLLECTION_ID || "your-collection-id";
+      const data = await getTrendingMovies(databaseId, collectionId, 20);
+      setMovies(data);
+    } catch (err) {
+      console.error(err);
     }
-  };
-  useEffect(() => {
-    fetchMovies(debSearchTerm);
-  }, [debSearchTerm]);
+  }
 
   useEffect(() => {
     loadTrendingMovies();
   }, []);
+ 
   return (
     <main>
       <div className="pattern" />
@@ -110,8 +110,8 @@ const App = () => {
           {isLoading ? (
             <div className="mb-8">
               <div className="lds-dual-ring text-lg font-semibold mb-4"></div>
-              <div class="flex justify-center">
-                <div class="w-8 h-8 after:content-[''] after:block after:w-10 after:h-10 after:m-2 after:rounded-full after:border-[6.4px] after:border-current after:border-r-transparent after:border-b-transparent after:animate-dual-ring"></div>
+              <div className="flex justify-center">
+                <div className="w-8 h-8 after:content-[''] after:block after:w-10 after:h-10 after:m-2 after:rounded-full after:border-[6.4px] after:border-current after:border-r-transparent after:border-b-transparent after:animate-dual-ring"></div>
               </div>
             </div>
           ) : errorMsg ? (
