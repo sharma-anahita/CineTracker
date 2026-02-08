@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
+import './MovieDetails.css'
 
 const API_BASE_URL = 'https://api.themoviedb.org/3'
 const API_KEY = import.meta.env.VITE_TMDB_API_KEY
@@ -109,28 +110,28 @@ export default function MovieDetails() {
 
   if (isLoading)
     return (
-      <div>
-        <div className="skeleton-details" style={{display: 'flex', gap: 16}}>
-          <div className="skeleton-poster" style={{width: 200, height: 300, backgroundColor: '#e5e7eb'}} />
-          <div className="skeleton-meta" style={{flex: 1}}>
-            <div className="skeleton-title" style={{width: '60%', height: 24, backgroundColor: '#e5e7eb', marginBottom: 12}} />
-            <div className="skeleton-overview" style={{width: '100%', height: 72, backgroundColor: '#e5e7eb', marginBottom: 12}} />
-            <div className="skeleton-providers" style={{display: 'flex', gap: 8}}>
-              <div style={{width: 56, height: 32, backgroundColor: '#e5e7eb'}} />
-              <div style={{width: 56, height: 32, backgroundColor: '#e5e7eb'}} />
-              <div style={{width: 56, height: 32, backgroundColor: '#e5e7eb'}} />
+      <div className="movie-details-container">
+        <div className="skeleton-details">
+          <div className="skeleton-poster" />
+          <div className="skeleton-meta">
+            <div className="skeleton-title" />
+            <div className="skeleton-overview" />
+            <div className="skeleton-providers">
+              <div className="skeleton-provider" />
+              <div className="skeleton-provider" />
+              <div className="skeleton-provider" />
             </div>
           </div>
         </div>
 
-        <section style={{marginTop: 24}}>
+        <section style={{ marginTop: 24 }}>
           <h2>Cast</h2>
-          <div className="cast-grid" style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))', gap: 12, marginTop: 12}}>
+          <div className="skeleton-cast-grid">
             {Array.from({ length: 8 }).map((_, i) => (
-              <div className="cast-card" key={i} style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-                <div style={{width: 100, height: 140, backgroundColor: '#e5e7eb'}} />
-                <div style={{width: 80, height: 12, backgroundColor: '#e5e7eb', marginTop: 8}} />
-                <div style={{width: 100, height: 10, backgroundColor: '#e5e7eb', marginTop: 6}} />
+              <div className="skeleton-cast-card" key={i}>
+                <div className="box" />
+                <div className="line-1" />
+                <div className="line-2" />
               </div>
             ))}
           </div>
@@ -139,7 +140,7 @@ export default function MovieDetails() {
     )
   if (error)
     return (
-      <div>
+      <div className="movie-details-container">
         <h2>Something went wrong</h2>
         <p>We couldn't load the movie details. Please try again.</p>
         <p style={{ color: '#666', fontSize: 12 }}>Technical: {error}</p>
@@ -155,81 +156,89 @@ export default function MovieDetails() {
         </div>
       </div>
     )
-  if (!movie) return <div>No movie data</div>
+  if (!movie) return <div className="movie-details-container">No movie data</div>
 
   return (
-    <div>
-      <h1>{movie.title || movie.name}</h1>
-
-      <div>
-        {movie.poster_path ? (
-          <img
-            src={`https://image.tmdb.org/t/p/w500/${movie.poster_path}`}
-            alt={movie.title || movie.name}
-          />
-        ) : (
-          <p>No poster available.</p>
-        )}
-      </div>
-
-      <p>{movie.overview}</p>
-
-      <div>
-        <strong>Release date:</strong> {movie.release_date || 'N/A'}
-      </div>
-
-      <div>
-        <strong>Rating:</strong> {movie.vote_average != null ? movie.vote_average.toFixed(1) : 'N/A'}
-      </div>
-
-      <section>
-        <h2>Available On</h2>
-        {providers && providers.length > 0 ? (
-          <div>
-            {providers.map((p) => (
-              p.logo_path ? (
-                <img
-                  key={p.provider_id}
-                  src={`https://image.tmdb.org/t/p/w92${p.logo_path}`}
-                  alt={p.provider_name}
-                />
-              ) : (
-                <span key={p.provider_id}>{p.provider_name}</span>
-              )
-            ))}
+    <div className="movie-details-container">
+      <div className="movie-details-grid">
+        {/* Left column: poster and providers */}
+        <aside className="left-col">
+          <div className="poster-wrap">
+            {movie.poster_path ? (
+              <img
+                src={`https://image.tmdb.org/t/p/w500/${movie.poster_path}`}
+                alt={movie.title || movie.name}
+              />
+            ) : (
+              <p>No poster available.</p>
+            )}
           </div>
-        ) : (
-          <p>No streaming providers available in your region ({countryCode}).</p>
-        )}
-      </section>
 
-      <section>
-        <h2>Cast</h2>
-        {cast.length > 0 ? (
-          <div className="cast-grid">
-            {cast.map((c) => (
-              <Link to={`/person/${c.id}`} key={c.id}>
-                <div className="cast-card">
-                  {c.profile_path ? (
+          {providers && providers.length > 0 && (
+            <section className="providers-section">
+              <h2>Available On</h2>
+              <div className="providers-list">
+                {providers.map((p) => (
+                  p.logo_path ? (
                     <img
-                      src={`https://image.tmdb.org/t/p/w185${c.profile_path}`}
-                      alt={c.name}
+                      key={p.provider_id}
+                      src={`https://image.tmdb.org/t/p/w92${p.logo_path}`}
+                      alt={p.provider_name}
                     />
                   ) : (
-                    <img src="/no-profile.png" alt="No profile" />
-                  )}
-                  <div className="cast-info">
-                    <div className="cast-name">{c.name}</div>
-                    <div className="cast-character">as {c.character}</div>
-                  </div>
-                </div>
-              </Link>
-            ))}
-          </div>
-        ) : (
-          <p>No cast information available.</p>
-        )}
-      </section>
+                    <span key={p.provider_id}>{p.provider_name}</span>
+                  )
+                ))}
+              </div>
+            </section>
+          )}
+        </aside>
+
+        {/* Right column: title, meta, and cast */}
+        <main className="right-col">
+          <header>
+            <h1>{movie.title || movie.name}</h1>
+            <div>
+              <strong>Release date:</strong> {movie.release_date || 'N/A'}
+            </div>
+            <div>
+              <strong>Rating:</strong> {movie.vote_average != null ? movie.vote_average.toFixed(1) : 'N/A'}
+            </div>
+          </header>
+
+          <section className="overview">
+            <p>{movie.overview}</p>
+          </section>
+
+          <section className="cast-section">
+            <h2>Cast</h2>
+            {cast.length > 0 ? (
+              <div className="cast-grid">
+                {cast.map((c) => (
+                  <Link to={`/person/${c.id}`} key={c.id}>
+                    <div className="cast-card">
+                      {c.profile_path ? (
+                        <img
+                          src={`https://image.tmdb.org/t/p/w185${c.profile_path}`}
+                          alt={c.name}
+                        />
+                      ) : (
+                        <img src="/no-profile.png" alt="No profile" />
+                      )}
+                      <div className="cast-info">
+                        <div className="cast-name">{c.name}</div>
+                        <div className="cast-character">as {c.character}</div>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            ) : (
+              <p>No cast information available.</p>
+            )}
+          </section>
+        </main>
+      </div>
     </div>
   )
 }
