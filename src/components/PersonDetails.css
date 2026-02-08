@@ -1,0 +1,112 @@
+.movie-details-container{
+  margin:0 auto;
+  max-width:1100px;
+  padding:16px;
+}
+
+/* Hero header: tighter two-column layout grouping image + name */
+.person-hero{
+  display:grid;
+  grid-template-columns: 300px 1fr;
+  gap:24px;
+  align-items:center;
+  padding:20px;
+  border-radius:12px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.005));
+  box-shadow: 0 10px 32px rgba(2,6,23,0.55);
+}
+
+.hero-media{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:6px;
+  border-radius:12px;
+  background: linear-gradient(180deg, rgba(0,0,0,0.02), rgba(255,255,255,0.01));
+}
+
+.hero-media img{
+  width:300px;
+  height:auto;
+  border-radius:10px;
+  display:block;
+  object-fit:cover;
+  --tx: 0px;
+  --ty: 0px;
+  --scale: 0.985;
+  --opacity: 0;
+  transform: translate(var(--tx), var(--ty)) scale(var(--scale));
+  opacity: var(--opacity);
+  transition: transform 420ms cubic-bezier(.2,.9,.2,1), opacity 300ms ease, box-shadow 320ms ease;
+  will-change: transform, opacity;
+  box-shadow: 0 12px 40px rgba(2,6,23,0.5);
+  border: 4px solid rgba(255,255,255,0.02);
+}
+
+/* Subtle cinematic glow behind the profile image */
+.hero-media{
+  position:relative;
+  overflow:visible;
+}
+.hero-media::before{
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: calc(100% + 140px);
+  height: calc(100% + 140px);
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(99,102,241,0.12), rgba(99,102,241,0.04) 40%, rgba(0,0,0,0) 65%);
+  filter: blur(28px);
+  opacity: 0.95;
+  z-index: 0;
+  pointer-events: none;
+}
+.hero-media img{ z-index: 2 }
+
+@media (prefers-reduced-motion: reduce){
+  .hero-media::before{ filter: blur(10px); }
+}
+.hero-media img.is-mounted{
+  --scale: 1;
+  --opacity: 1;
+}
+
+.hero-meta{display:flex;flex-direction:column;gap:6px}
+.person-name{margin:0;font-size:1.5rem}
+.hero-meta .meta-row{color:#9aa3b2;font-size:0.95rem}
+
+/* main content below hero */
+.person-content{margin-top:18px}
+.biography-section h2,.filmography-section h2{margin-top:0}
+
+.filmography-section{margin-top:16px}
+.filmography-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;margin-top:8px}
+.film-card{width:140px;display:flex;flex-direction:column;gap:8px}
+.film-card img{width:100%;height:200px;object-fit:cover;border-radius:6px}
+.film-title{font-weight:600;font-size:0.95rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.film-year{font-size:0.85rem;color:#6b7280}
+
+
+@media (max-width:1100px){
+  .person-hero{grid-template-columns: 260px 1fr;gap:20px;padding:18px}
+  .hero-media img{width:260px}
+}
+
+@media (max-width:880px){
+  .person-hero{grid-template-columns: 200px 1fr;gap:14px;padding:14px}
+  .hero-media img{width:200px}
+}
+
+@media (max-width:600px){
+  .person-hero{grid-template-columns: 1fr;grid-auto-rows:auto;align-items:start}
+  .hero-media img{width:100%;height:auto}
+  .filmography-grid{display:flex;overflow-x:auto;padding-bottom:6px;-webkit-overflow-scrolling:touch}
+  .film-card{flex:0 0 140px}
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce){
+  .hero-media img{ transition: none !important }
+}
