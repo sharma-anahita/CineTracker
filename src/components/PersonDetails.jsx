@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { useParams, Link } from 'react-router-dom'
+import HomeButton from './HomeButton'
 import './PersonDetails.css'
 
 const API_BASE_URL = 'https://api.themoviedb.org/3'
@@ -146,6 +147,9 @@ export default function PersonDetails() {
 
   return (
     <div className="movie-details-container">
+      <div className="home-button-outer">
+        <HomeButton />
+      </div>
       <div className="person-hero" ref={containerRef}>
         <div className="hero-media">
           {person.profile_path ? (

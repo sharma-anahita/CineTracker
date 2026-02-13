@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
+import HomeButton from './HomeButton'
 import './MovieDetails.css'
 
 const API_BASE_URL = 'https://api.themoviedb.org/3'
@@ -16,6 +17,8 @@ export default function MovieDetails() {
   const [error, setError] = useState(null)
   const [reloadKey, setReloadKey] = useState(0)
   const [aiSummary, setAiSummary] = useState(null)
+  const [aiLoading, setAiLoading] = useState(false)
+  const [aiError, setAiError] = useState(null)
 
   useEffect(() => {
     if (!movieId) return
@@ -104,8 +107,47 @@ export default function MovieDetails() {
   // TODO: implement AI integration to generate a concise summary from `movie`.
   // This function should eventually call an AI service and return a string.
   async function generateAISummary(movieData) {
-    // Not implemented yet — return a placeholder string for now.
-    return 'AI summary not implemented yet.'
+    // Send movie title and overview to backend AI endpoint.
+    const payload = {
+      title: movieData?.title || movieData?.name || '',
+      overview: movieData?.overview || '',
+    }
+
+    const resp = await fetch('/api/ai/movie-summary', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    })
+
+    if (!resp.ok) {
+      const text = await resp.text().catch(() => resp.statusText || 'Unknown error')
+      throw new Error(text || `AI service responded with ${resp.status}`)
+    }
+
+    const contentType = (resp.headers.get('content-type') || '').toLowerCase()
+    if (contentType.includes('application/json')) {
+      const data = await resp.json()
+      return data.summary || data.text || data.result || JSON.stringify(data)
+    }
+
+    return await resp.text()
+  }
+
+  async function handleGenerateAISummary() {
+    setAiError(null)
+    setAiLoading(true)
+    setAiSummary(null)
+    try {
+      const summary = await generateAISummary(movie)
+      setAiSummary(summary)
+    } catch (err) {
+      console.error('AI summary generation failed', err)
+      setAiError('Failed to generate AI summary')
+    } finally {
+      setAiLoading(false)
+    }
   }
 
   if (isLoading)
@@ -160,6 +202,9 @@ export default function MovieDetails() {
 
   return (
     <div className="movie-details-container">
+      <div className="home-button-outer">
+        <HomeButton />
+      </div>
       <div className="movie-details-grid">
         {/* Left column: poster and providers */}
         <aside className="left-col">
@@ -208,6 +253,21 @@ export default function MovieDetails() {
 
           <section className="overview">
             <p>{movie.overview}</p>
+          </section>
+
+          <section className="ai-summary-section">
+            <h2>AI Summary</h2>
+            {aiSummary ? (
+              <p>{aiSummary}</p>
+            ) : (
+              <p style={{ color: '#666' }}>No AI summary generated yet.</p>
+            )}
+            {aiError && <p style={{ color: 'red', fontSize: 12 }}>{aiError}</p>}
+            <div style={{ marginTop: 8 }}>
+              <button onClick={handleGenerateAISummary} disabled={aiLoading}>
+                {aiLoading ? 'Generating...' : 'Generate AI Summary'}
+              </button>
+            </div>
           </section>
 
           <section className="cast-section">

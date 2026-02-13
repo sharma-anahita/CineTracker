@@ -3,7 +3,10 @@
 
 @import 'tailwindcss';
 
+    /* allow absolute-positioned controls inside the card without changing layout */
+    position: relative;
 @keyframes dual-ring {
+
             0% {
                 transform: rotate(0deg);
             }
@@ -20,9 +23,11 @@
     transform: rotate(0deg);
   }
   100% {
+
     transform: rotate(360deg);
   }
 }
+
 
 
 @theme{
@@ -100,6 +105,18 @@
     }
   }
 
+  .genre-section {
+    @apply mb-7;
+  }
+
+  .favorites-list {
+    @apply flex flex-row overflow-x-auto gap-5 hide-scrollbar pt-3;
+  }
+
+  .favorites-item {
+    @apply min-w-[230px] flex flex-row items-center;
+  }
+
   .search {
     @apply w-full bg-light-100/5 px-4 py-3 rounded-lg mt-10 max-w-3xl mx-auto;
 
@@ -114,6 +131,27 @@
     & input {
       @apply w-full bg-transparent py-2 sm:pr-10 pl-10 text-base text-gray-200 placeholder-light-200 outline-hidden;
     }
+  }
+
+  .home-button-outer {
+    position: fixed;
+    top: 16px;
+    /* Align to the left edge of the centered `.wrapper` container (max-w-7xl / 1280px).
+       On small screens use 16px padding. On large screens calculate: center - half(1280px) + wrapper padding (20px).
+    */
+    left: max(16px, calc(50% - 640px + 20px));
+    z-index: 1200;
+  }
+
+  .home-button {
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid rgba(0,0,0,0.08);
+    background: white;
+    color: #030014;
+    cursor: pointer;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+    font-size: 14px;
   }
 
   .all-movies {

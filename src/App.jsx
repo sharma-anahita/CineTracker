@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useDebounce } from "react-use";
 import "./App.css";
 import Search from "./components/search";
+import { Link } from 'react-router-dom'
 import MovieCard from "./components/MovieCard.jsx";
 import { updateSearchCount, getTrendingMovies } from "./appwrite.js";
 
@@ -24,6 +25,82 @@ const App = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
   const [trendingMovies, setTrendingMovies] = useState([]);
+  const [aiRecommendations, setAiRecommendations] = useState(null);
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiError, setAiError] = useState(null);
+
+  async function fetchAiRecommendations() {
+    setAiLoading(true)
+    setAiError(null)
+    setAiRecommendations(null)
+    try {
+      // Build request payload with optional context from localStorage
+      const buildPayload = () => {
+        const p = {}
+        if (searchTerm) p.query = searchTerm
+        try {
+          if (typeof window !== 'undefined' && window.localStorage) {
+            const rv = localStorage.getItem('recentlyViewed')
+            if (rv) {
+              try { p.recentlyViewed = JSON.parse(rv) } catch { p.recentlyViewed = rv }
+            }
+            const sg = localStorage.getItem('selectedGenres')
+            if (sg) {
+              try { p.selectedGenres = JSON.parse(sg) } catch { p.selectedGenres = sg }
+            }
+          }
+        } catch (e) {}
+        return Object.keys(p).length === 0 ? {} : p
+      }
+
+      const resp = await fetch('/api/ai/recommend', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(buildPayload()),
+      })
+
+      if (!resp.ok) {
+        const text = await resp.text().catch(() => resp.statusText || 'Request failed')
+        throw new Error(text || `Status ${resp.status}`)
+      }
+
+      const data = await resp.json()
+      const recs = data && data.recommendations ? data.recommendations : data
+
+      const titles = (Array.isArray(recs) ? recs : [])
+        .map((item) => (item && typeof item === 'object' ? item.title || item.name : String(item || '')))
+        .filter(Boolean)
+        .slice(0, 5)
+
+      const fetchTmdbForTitle = async (title) => {
+        try {
+          const url = `${API_BASE_URL}/search/movie?api_key=${API_KEY}&query=${encodeURIComponent(title)}&page=1`
+          const r = await fetch(url)
+          if (!r.ok) return { title }
+          const d = await r.json()
+          const best = Array.isArray(d.results) && d.results.length > 0 ? d.results[0] : null
+          if (!best) return { title }
+          return {
+            title: best.title || best.original_title || title,
+            poster: best.poster_path ? `https://image.tmdb.org/t/p/w500${best.poster_path}` : null,
+            rating: best.vote_average != null ? best.vote_average : null,
+            year: best.release_date ? best.release_date.slice(0, 4) : null,
+            tmdb_id: best.id || null,
+          }
+        } catch {
+          return { title }
+        }
+      }
+
+      const detailed = await Promise.all(titles.map(fetchTmdbForTitle))
+      setAiRecommendations(detailed)
+    } catch (err) {
+      console.error('fetchAiRecommendations error', err)
+      setAiError(err.message || 'Failed to fetch recommendations')
+    } finally {
+      setAiLoading(false)
+    }
+  }
 
   useDebounce(() => setDebouncedSearchTerm(searchTerm), 400, [searchTerm]);
 
@@ -93,7 +170,17 @@ const App = () => {
           <h1>
             Find <span className="text-gradient">Movies</span> you wanna watch
           </h1>
-          <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+          <Search
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+            getAiRecommendations={fetchAiRecommendations}
+            aiLoading={aiLoading}
+            aiRecommendations={aiRecommendations}
+            aiError={aiError}
+          />
+          <div style={{ display: 'flex', justifyContent: 'center', marginTop: 12 }}>
+            <Link to="/favorites" className="home-button">Favorites</Link>
+          </div>
         </header>
 
         {trendingMovies.length > 0 && (
